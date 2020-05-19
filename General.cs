@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Automatonymous;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json.Linq;
+using States;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -51,6 +53,11 @@ namespace General {
                 EndFrame = endFrame;
                 Continuous = continuous;
             }
+        }
+    }
+    public class CharacterStateMachine : AutomatonymousStateMachine<CharacterState> {
+        public CharacterStateMachine() {
+            InstanceState(x => x.Current);
         }
     }
 }
