@@ -1,0 +1,80 @@
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
+using General;
+using Newtonsoft.Json;
+using System.IO;
+using System;
+using System.Collections;
+
+class AnimationController {
+    public Dictionary<string, AnimatedSprite> mCharacterSpriteSet;
+    public AnimatedSprite activeAnim;
+    public bool shouldFlip;
+    public string defaultAnimName;
+    private int frameToDraw = 0;
+    private double cumulativeDelta;
+
+    public AnimationController() {
+        
+    }
+
+    public AnimationController(Dictionary<string, AnimatedSprite> spriteSet, string defaultAnimation) {
+        mCharacterSpriteSet = spriteSet;
+        defaultAnimName = defaultAnimation;
+        mCharacterSpriteSet.TryGetValue(defaultAnimName, out activeAnim);
+        SetFrame();
+    }
+
+    public void Update(GameTime gameTime) {
+        if (cumulativeDelta < activeAnim.FrameTime) {
+            cumulativeDelta += gameTime.ElapsedGameTime.TotalMilliseconds;
+        }
+        else {
+            frameToDraw++;
+            if (frameToDraw > activeAnim.ActiveTag.EndFrame) {
+                if (!activeAnim.ActiveTag.Continuous) {
+                    mCharacterSpriteSet.TryGetValue(defaultAnimName, out activeAnim);
+                }
+                frameToDraw = activeAnim.ActiveTag.StartFrame;
+            }
+            cumulativeDelta = 0;
+        }
+    }
+
+    public void Draw(SpriteBatch spriteBatch, Vector2 location) {
+        Rectangle sourceRect = new Rectangle(
+            (int)activeAnim.SpriteDimensions.X * (frameToDraw), 0,
+            (int)activeAnim.SpriteDimensions.X,
+            (int)activeAnim.SpriteDimensions.Y);
+        Rectangle destRect = new Rectangle(
+            (int)location.X, (int)location.Y, (int)activeAnim.SpriteDimensions.X, (int)activeAnim.SpriteDimensions.Y);
+        spriteBatch.Draw(activeAnim.Spritesheet, destRect, sourceRect, Color.White);
+    }
+
+    #region Animation Control
+    public void SetAnim(string animName, string animTag) {
+        activeAnim = mCharacterSpriteSet[animName];
+        activeAnim.PreviousActiveTagName = activeAnim.ActiveTagName;
+        SetTag(animTag);
+    }
+    public void SetTag(string animTag) {
+        if (shouldFlip) {
+            activeAnim.ActiveTag = activeAnim.Tags["flipped"][animTag];
+        }
+        else {
+            activeAnim.ActiveTag = activeAnim.Tags["normal"][animTag];
+        }
+        SetFrame();
+    }
+    private void SetFrame() {
+        frameToDraw = activeAnim.ActiveTag.StartFrame;
+    }
+    #endregion
+
+    // Populates fields with animation data. Typically called from LoadContent().
+    public void Initialize(Dictionary<string, AnimatedSprite> spriteSet, string defaultAnimation) {
+        mCharacterSpriteSet = spriteSet;
+        defaultAnimName = defaultAnimation;
+    }
+}
