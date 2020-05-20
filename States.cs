@@ -1,9 +1,5 @@
-﻿using Automatonymous;
-using System;
+﻿using System;
 namespace States {
-    public class CharacterState {
-        public State Current { get; set; }
-    }
 
     #region Actions
     public static class Actions {

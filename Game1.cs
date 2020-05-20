@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using System.Linq;
-using System.Security.Principal;
 
 namespace General {
     /// <summary>
@@ -72,8 +71,10 @@ namespace General {
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             background1 = Content.Load<Texture2D>("Sprites/Assets/Background_1");
             font = Content.Load<SpriteFont>("Sprites/PixelFont");
+            Stream FrameDataStream = TitleContainer.OpenStream(@"Content\SpritesPlatformerPack\Player\player_frame_data.json");
+            StreamReader reader = new StreamReader(FrameDataStream);
 
-            JObject FrameData = JObject.Parse(File.ReadAllText("Content/player_frame_data.json"));
+            JObject FrameData = JObject.Parse(reader.ReadToEnd());
 
             playerSpriteSet = new Dictionary<string, AnimatedSprite>();
             playerSpriteSet.Add("Main", new AnimatedSprite(
