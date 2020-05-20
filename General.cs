@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json.Linq;
-using States;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,9 +8,8 @@ namespace General {
     public struct AnimatedSprite {
         public Texture2D Spritesheet { get; }
         public double FrameTime { get; }
-        public Dictionary<string, Dictionary<string, TagData>> Tags;
+        public Dictionary<string, Dictionary<string, TagData>> CategorizedTags;
         public TagData ActiveTag;
-        public string PreviousActiveTagName;
         public string ActiveTagName;
         public KeyValuePair<string, string> DefaultAnimation;
         public Vector2 SpriteDimensions { get; }
@@ -20,7 +18,7 @@ namespace General {
             Spritesheet = spritesheet;
             FrameTime = 1000 / (int)frameData["frameRate"];
             SpriteDimensions = new Vector2((float)frameData["sourceSize"]["w"], (float)frameData["sourceSize"]["h"]);
-            Tags = new Dictionary<string, Dictionary<string, TagData>>();
+            CategorizedTags = new Dictionary<string, Dictionary<string, TagData>>();
 
             foreach (JProperty category in frameData["frameTags"]) {
                 Dictionary<string, TagData> thisCategory = new Dictionary<string, TagData>();
@@ -29,17 +27,16 @@ namespace General {
                     thisCategory.Add((string)tag["name"], new TagData(
                         (int)tag["from"], (int)tag["to"], (bool)tag["continuous"]));
                 }
-                Tags.Add(category.Name, thisCategory);
+                CategorizedTags.Add(category.Name, thisCategory);
             }
 
             DefaultAnimation = new KeyValuePair<string, string>(
                 frameData["defaultCategory"].Children<JProperty>().First().Name,
                 (string)frameData["defaultCategory"].Children<JProperty>().First().Value);
-            ActiveTag = Tags
+            ActiveTag = CategorizedTags
                 [DefaultAnimation.Key]
                 [DefaultAnimation.Value];
             ActiveTagName = DefaultAnimation.Value;
-            PreviousActiveTagName = ActiveTagName;
         }
 
         public struct TagData {
