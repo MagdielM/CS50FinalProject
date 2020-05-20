@@ -2,15 +2,11 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using General;
-using Newtonsoft.Json;
-using System.IO;
-using System;
-using System.Collections;
 
 class AnimationController {
     public Dictionary<string, AnimatedSprite> mCharacterSpriteSet;
     public AnimatedSprite activeAnim;
-    public bool shouldFlip;
+    public string activeCategory;
     public string defaultAnimName;
     private int frameToDraw = 0;
     private double cumulativeDelta;
@@ -27,7 +23,7 @@ class AnimationController {
     }
 
     public void Update(GameTime gameTime) {
-        if (cumulativeDelta < activeAnim.FrameTime) {
+        if (cumulativeDelta < activeAnim.ActiveTag.FrameTime) {
             cumulativeDelta += gameTime.ElapsedGameTime.TotalMilliseconds;
         }
         else {
@@ -53,18 +49,16 @@ class AnimationController {
     }
 
     #region Animation Control
-    public void SetAnim(string animName, string animTag) {
+    public void SetAnim(string animName, string category, string animTag) {
         activeAnim = mCharacterSpriteSet[animName];
-        activeAnim.PreviousActiveTagName = activeAnim.ActiveTagName;
+        SetCategory(category, animTag);
+    }
+    public void SetCategory(string category, string animTag) {
+        activeCategory = category;
         SetTag(animTag);
     }
     public void SetTag(string animTag) {
-        if (shouldFlip) {
-            activeAnim.ActiveTag = activeAnim.Tags["flipped"][animTag];
-        }
-        else {
-            activeAnim.ActiveTag = activeAnim.Tags["normal"][animTag];
-        }
+        activeAnim.ActiveTag = activeAnim.CategorizedTags[activeCategory][animTag];
         SetFrame();
     }
     private void SetFrame() {
@@ -73,7 +67,7 @@ class AnimationController {
     #endregion
 
     // Populates fields with animation data. Typically called from LoadContent().
-    public void Initialize(Dictionary<string, AnimatedSprite> spriteSet, string defaultAnimation) {
+    public void LoadInit(Dictionary<string, AnimatedSprite> spriteSet, string defaultAnimation) {
         mCharacterSpriteSet = spriteSet;
         defaultAnimName = defaultAnimation;
     }

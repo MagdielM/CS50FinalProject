@@ -10,6 +10,7 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:..\..\FrameDataPipelineExtension\bin\Debug\FrameDataPipelineExtension.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -103,6 +104,11 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Sprites/PlatformerPack/Player/player.png
+
+#begin Sprites/PlatformerPack/Player/player_frame_data.json
+/importer:FrameDataImporter
+/processor:FrameDataProcessor
+/build:Sprites/PlatformerPack/Player/player_frame_data.json
 
 #begin Sprites/PlatformerPack/Player/Run/run.png
 /importer:TextureImporter

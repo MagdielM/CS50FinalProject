@@ -1,9 +1,8 @@
 { 
-  "image": "player.png",
+  "imagePath": "Sprites/PlatformerPack/Player/player",
   "size": { "w": 880, "h": 32 },
   "sourceSize": { "w": 22, "h": 32 },
   "scale": "1",
-  "totalFrames": 39,
   "frameRate": 15,
   "defaultCategory": { "normal": "Idle" },
   "frameTags": {
