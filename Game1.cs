@@ -13,6 +13,7 @@ namespace General {
     class Game1 : Game {
 
         #region General References
+
         int VirtualWidth = 256;
         int VirtualHeight = 144;
         Rectangle Screen;
@@ -58,6 +59,7 @@ namespace General {
             Graphics.ApplyChanges();
             RenderTarget = new RenderTarget2D(GraphicsDevice, VirtualWidth, VirtualHeight);
             Screen = new Rectangle(new Point(0, 0), new Point(Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight));
+            PlayerCharacter.Initialize();
             base.Initialize();
         }
 
@@ -80,7 +82,7 @@ namespace General {
             playerSpriteSet.Add("Main", new AnimatedSprite(
                 Content.Load<Texture2D>("Sprites/PlatformerPack/Player/player"), FrameData));
 
-            PlayerCharacter.Initialize(playerSpriteSet, playerSpriteSet.Keys.ElementAt(0));
+            PlayerCharacter.LoadInit(playerSpriteSet, playerSpriteSet.Keys.ElementAt(0));
         }
 
         /// <summary>
@@ -99,24 +101,6 @@ namespace General {
         protected override void Update(GameTime gameTime) {
 
             KeyboardState currentState = Keyboard.GetState();
-
-            // Checks for initial key presses
-            if (PreviousState.IsKeyUp(Keys.Left) && currentState.IsKeyDown(Keys.Left)) {
-                PlayerCharacter.Flip();
-                PlayerCharacter.PlayerState.Fire(State.CharTriggers.RUN_START);
-            }
-            if (PreviousState.IsKeyUp(Keys.Right) && currentState.IsKeyDown(Keys.Right)) {
-                PlayerCharacter.Deflip();
-                PlayerCharacter.PlayerState.Fire(State.CharTriggers.RUN_START);
-            }
-
-            //Checks for key releases
-            if (PreviousState.IsKeyDown(Keys.Left) && currentState.IsKeyUp(Keys.Left)) {
-                PlayerCharacter.PlayerState.Fire(State.CharTriggers.RUN_END);
-            }
-            if (PreviousState.IsKeyDown(Keys.Right) && currentState.IsKeyUp(Keys.Right)) {
-                PlayerCharacter.PlayerState.Fire(State.CharTriggers.RUN_END);
-            }
 
             PreviousState = currentState;
 
