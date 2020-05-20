@@ -1,5 +1,4 @@
-﻿using Automatonymous;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json.Linq;
 using States;
@@ -55,9 +54,5 @@ namespace General {
             }
         }
     }
-    public class CharacterStateMachine : AutomatonymousStateMachine<CharacterState> {
-        public CharacterStateMachine() {
-            InstanceState(x => x.Current);
-        }
-    }
+
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using State;
+using States;
 using Stateless;
 using System.Collections.Generic;
 
