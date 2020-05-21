@@ -1,11 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using General;
+using FrameDataLibrary;
 
 class AnimationController {
-    public Dictionary<string, AnimatedSprite> mCharacterSpriteSet;
-    public AnimatedSprite activeAnim;
+    public Dictionary<string, Texture2D> mCharacterSprites;
+    public Dictionary<string, FrameData> mCharacterFrameData;
+    public FrameData activeAnim;
     public string activeCategory;
     public string defaultAnimName;
     private int frameToDraw = 0;
@@ -15,24 +16,28 @@ class AnimationController {
         
     }
 
-    public AnimationController(Dictionary<string, AnimatedSprite> spriteSet, string defaultAnimation) {
-        mCharacterSpriteSet = spriteSet;
+    public AnimationController(
+            Dictionary<string, Texture2D> spriteSet,
+            Dictionary<string, FrameData> frameData,
+            string defaultAnimation) {
+        mCharacterSprites = spriteSet;
+        mCharacterFrameData = frameData;
         defaultAnimName = defaultAnimation;
-        mCharacterSpriteSet.TryGetValue(defaultAnimName, out activeAnim);
+        mCharacterFrameData.TryGetValue(defaultAnimName, out activeAnim);
         SetFrame();
     }
 
     public void Update(GameTime gameTime) {
-        if (cumulativeDelta < activeAnim.ActiveTag.FrameTime) {
+        if (cumulativeDelta < activeAnim.activeTag.FrameTime) {
             cumulativeDelta += gameTime.ElapsedGameTime.TotalMilliseconds;
         }
         else {
             frameToDraw++;
-            if (frameToDraw > activeAnim.ActiveTag.EndFrame) {
-                if (!activeAnim.ActiveTag.Continuous) {
-                    mCharacterSpriteSet.TryGetValue(defaultAnimName, out activeAnim);
+            if (frameToDraw > activeAnim.activeTag.EndFrame) {
+                if (!activeAnim.activeTag.Continuous) {
+                    mCharacterFrameData.TryGetValue(defaultAnimName, out activeAnim);
                 }
-                frameToDraw = activeAnim.ActiveTag.StartFrame;
+                frameToDraw = activeAnim.activeTag.StartFrame;
             }
             cumulativeDelta = 0;
         }

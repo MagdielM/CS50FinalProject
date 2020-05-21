@@ -93,7 +93,12 @@
 /processorParam:TextureFormat=Color
 /build:Sprites/PlatformerPack/Player/Jump/jump.png
 
-#begin Sprites/PlatformerPack/Player/player.png
+#begin Sprites/PlatformerPack/Player/player_frame_data.json
+/importer:FrameDataImporter
+/processor:FrameDataProcessor
+/build:Sprites/PlatformerPack/Player/player_frame_data.json
+
+#begin Sprites/PlatformerPack/Player/player_sprite.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -103,12 +108,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/PlatformerPack/Player/player.png
-
-#begin Sprites/PlatformerPack/Player/player_frame_data.json
-/importer:FrameDataImporter
-/processor:FrameDataProcessor
-/build:Sprites/PlatformerPack/Player/player_frame_data.json
+/build:Sprites/PlatformerPack/Player/player_sprite.png
 
 #begin Sprites/PlatformerPack/Player/Run/run.png
 /importer:TextureImporter

@@ -2,21 +2,19 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
-namespace General {
+namespace Game1 {
     class PlayerCharacter {
         public Vector2 Position;
-
         AnimationController PlayerAnimator;
 
         public PlayerCharacter(Vector2 spawnPoint) {
             Position = spawnPoint;
-            PlayerAnimator = new AnimationController();
         }
 
         public void Initialize() {
         }
 
-        public void LoadInit(Dictionary<string, AnimatedSprite> spriteSet, string defaultAnimation) {
+        public void LoadInit(Dictionary<string, FrameDataLibrary.FrameData> spriteSet, string defaultAnimation) {
             PlayerAnimator.LoadInit(spriteSet, defaultAnimation);
 
         }
