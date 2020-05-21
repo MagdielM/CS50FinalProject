@@ -1,43 +1,64 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FrameDataLibrary;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using FrameDataLibrary;
 
 class AnimationController {
-    public Dictionary<string, Texture2D> mCharacterSprites;
-    public Dictionary<string, FrameData> mCharacterFrameData;
-    public FrameData activeAnim;
-    public string activeCategory;
-    public string defaultAnimName;
+    public Dictionary<string, SpriteReference> SpriteSet;
+    public SpriteReference ActiveAnimation { get; set; }
+    public string ActiveCategory { get; set; }
+    private string defaultAnimName;
     private int frameToDraw = 0;
     private double cumulativeDelta;
 
-    public AnimationController() {
-        
+    /// <summary>
+    /// Empty constructor. LoadInit() should be called before use.
+    /// </summary>
+    public AnimationController() {}
+
+    /// <summary>
+    /// Convenience constructor. This is equivalent to creating the empty object and calling LoadInit(spriteSet, default).
+    /// </summary>
+    public AnimationController(Dictionary<string, SpriteReference> spriteSet, string defaultAnimation) {
+        LoadInit(spriteSet, defaultAnimation);
     }
 
-    public AnimationController(
-            Dictionary<string, Texture2D> spriteSet,
-            Dictionary<string, FrameData> frameData,
-            string defaultAnimation) {
-        mCharacterSprites = spriteSet;
-        mCharacterFrameData = frameData;
+    /// <summary>
+    /// Populates fields with animation data. Typically called from LoadContent().
+    /// </summary>
+    /// <param name="spriteSet">The set of <see cref="SpriteReference"/>s this object will hold.</param>
+    /// <param name="defaultAnimation">The name of the default animation in <paramref name="spriteSet"/>.</param>
+    public void LoadInit(Dictionary<string, SpriteReference> spriteSet, string defaultAnimation) {
+        SpriteSet = spriteSet;
         defaultAnimName = defaultAnimation;
-        mCharacterFrameData.TryGetValue(defaultAnimName, out activeAnim);
-        SetFrame();
+        SetToDefault(defaultAnimation);
+
+    }
+
+    /// <summary>
+    /// Convenience method to reset this object's ActiveAnimation to default.
+    /// </summary>
+    /// <param name="defaultAnimation">The name of the default animation in this object's SpriteSet.</param>
+    /// <exception cref="KeyNotFoundException">
+    /// Thrown when <paramref name="defaultAnimation"/> can't be found in <paramref name="spriteSet"/>.
+    /// </exception>
+    private void SetToDefault(string defaultAnimation) {
+        KeyValuePair<string, string> animation = SpriteSet[defaultAnimation].FrameData.DefaultAnimation;
+        int frame = SpriteSet[defaultAnimation].FrameData.ActiveTag.StartFrame;
+        SetAnimation(defaultAnimation, animation.Key, animation.Value, frame);
     }
 
     public void Update(GameTime gameTime) {
-        if (cumulativeDelta < activeAnim.activeTag.FrameTime) {
+        if (cumulativeDelta < ActiveAnimation.FrameData.ActiveTag.FrameTime) {
             cumulativeDelta += gameTime.ElapsedGameTime.TotalMilliseconds;
         }
         else {
             frameToDraw++;
-            if (frameToDraw > activeAnim.activeTag.EndFrame) {
-                if (!activeAnim.activeTag.Continuous) {
-                    mCharacterFrameData.TryGetValue(defaultAnimName, out activeAnim);
+            if (frameToDraw > ActiveAnimation.FrameData.ActiveTag.EndFrame) {
+                if (!ActiveAnimation.FrameData.ActiveTag.Continuous) {
+                    ActiveAnimation = SpriteSet[defaultAnimName];
                 }
-                frameToDraw = activeAnim.activeTag.StartFrame;
+                frameToDraw = ActiveAnimation.FrameData.ActiveTag.StartFrame;
             }
             cumulativeDelta = 0;
         }
@@ -45,35 +66,47 @@ class AnimationController {
 
     public void Draw(SpriteBatch spriteBatch, Vector2 location) {
         Rectangle sourceRect = new Rectangle(
-            (int)activeAnim.SpriteDimensions.X * (frameToDraw), 0,
-            (int)activeAnim.SpriteDimensions.X,
-            (int)activeAnim.SpriteDimensions.Y);
+            (int)ActiveAnimation.FrameData.SpriteDimensions.X * (frameToDraw), 0,
+            (int)ActiveAnimation.FrameData.SpriteDimensions.X,
+            (int)ActiveAnimation.FrameData.SpriteDimensions.Y);
         Rectangle destRect = new Rectangle(
-            (int)location.X, (int)location.Y, (int)activeAnim.SpriteDimensions.X, (int)activeAnim.SpriteDimensions.Y);
-        spriteBatch.Draw(activeAnim.Spritesheet, destRect, sourceRect, Color.White);
+            (int)location.X, (int)location.Y, 
+            (int)ActiveAnimation.FrameData.SpriteDimensions.X, 
+            (int)ActiveAnimation.FrameData.SpriteDimensions.Y);
+        spriteBatch.Draw(ActiveAnimation.Sprite, destRect, sourceRect, Color.White);
     }
 
     #region Animation Control
-    public void SetAnim(string animName, string category, string animTag) {
-        activeAnim = mCharacterSpriteSet[animName];
-        SetCategory(category, animTag);
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="animationName"></param>
+    /// <param name="category"></param>
+    /// <param name="animationTag"></param>
+    /// <param name="frame"></param>
+    public void SetAnimation(string animationName, string category, string animationTag, int frame) {
+        ActiveAnimation = SpriteSet[animationName];
+        SetCategory(category, animationTag, frame);
     }
-    public void SetCategory(string category, string animTag) {
-        activeCategory = category;
-        SetTag(animTag);
+    public void SetCategory(string category, string animationTag, int frame) {
+        ActiveCategory = category;
+        SetTag(animationTag, frame);
     }
-    public void SetTag(string animTag) {
-        activeAnim.ActiveTag = activeAnim.CategorizedTags[activeCategory][animTag];
-        SetFrame();
+    public void SetTag(string animTag, int frame) {
+        ActiveAnimation.FrameData.ActiveTag = ActiveAnimation.FrameData.CategorizedTags[ActiveCategory][animTag];
+        SetFrame(frame);
     }
-    private void SetFrame() {
-        frameToDraw = activeAnim.ActiveTag.StartFrame;
+    private void SetFrame(int frame) {
+        frameToDraw = frame;
     }
     #endregion
 
-    // Populates fields with animation data. Typically called from LoadContent().
-    public void LoadInit(Dictionary<string, AnimatedSprite> spriteSet, string defaultAnimation) {
-        mCharacterSpriteSet = spriteSet;
-        defaultAnimName = defaultAnimation;
+    /// <summary>
+    /// Shorthand for AnimationController.ActiveAnimation.FrameData.GetFrameFromDefault(frame);
+    /// </summary>
+    /// <param name="frame">The zero-indexed relative frame to convert.</param>
+    /// <returns>The absolute frame in the <see cref="FrameData.TagData"/> based on the relative frame entered.</returns>
+    public int GetFrameFromActive(int frame) {
+        return ActiveAnimation.FrameData.GetFrameFromDefault(frame);
     }
 }
