@@ -2,8 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-using System.IO;
-using Newtonsoft.Json.Linq;
 using System.Linq;
 using FrameDataLibrary;
 
@@ -53,7 +51,6 @@ namespace Game1 {
         /// and initialize them as well.
         /// </summary>
         protected override void Initialize() {
-            // TODO: Add your initialization logic here
             PlayerCharacter = new PlayerCharacter(new Vector2(50, 50));
             Graphics.PreferredBackBufferWidth = 1280;
             Graphics.PreferredBackBufferHeight = 720;
