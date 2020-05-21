@@ -34,7 +34,7 @@ namespace Game1 {
         Texture2D background1;
         AnimationController playerAnimController;
         private SpriteFont font;
-        Dictionary<string, AnimatedSprite> playerSpriteSet;
+        Dictionary<string, SpriteReference> playerSpriteSet;
 
         #endregion
 
@@ -72,10 +72,12 @@ namespace Game1 {
             background1 = Content.Load<Texture2D>("Sprites/Assets/Background_1");
             font = Content.Load<SpriteFont>("Sprites/PixelFont");
 
-            FrameData playerFrameData = Content.Load<Fram>
-            playerSpriteSet = new Dictionary<string, AnimatedSprite>();
-            playerSpriteSet.Add("Main", new AnimatedSprite(
-                Content.Load<Texture2D>("Sprites/PlatformerPack/Player/player"), FrameData));
+            var playerData = Content.Load<FrameData>("Sprites/PlatformerPack/Player/player_frame_data");
+            playerSpriteSet = new Dictionary<string, SpriteReference>();
+
+
+            playerSpriteSet.Add("Main", new SpriteReference(
+                Content.Load<Texture2D>(playerData.ImagePath), playerData));
 
             PlayerCharacter.LoadInit(playerSpriteSet, playerSpriteSet.Keys.ElementAt(0));
         }
