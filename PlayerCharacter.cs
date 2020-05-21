@@ -14,9 +14,8 @@ namespace Game1 {
         public void Initialize() {
         }
 
-        public void LoadInit(Dictionary<string, FrameDataLibrary.FrameData> spriteSet, string defaultAnimation) {
+        public void LoadInit(Dictionary<string, FrameDataLibrary.SpriteReference> spriteSet, string defaultAnimation) {
             PlayerAnimator.LoadInit(spriteSet, defaultAnimation);
-
         }
         public void Update(GameTime gameTime) {
             PlayerAnimator.Update(gameTime);
@@ -25,10 +24,14 @@ namespace Game1 {
             PlayerAnimator.Draw(spriteBatch, Position);
         }
         public void Flip() {
-            PlayerAnimator.SetTag(PlayerAnimator.activeAnim.ActiveTagName);
+            PlayerAnimator.SetCategory("flipped", 
+                PlayerAnimator.ActiveAnimation.FrameData.ActiveTagName, 
+                PlayerAnimator.ActiveAnimation.FrameData.ActiveTag.StartFrame);
         }
         public void Deflip() {
-            PlayerAnimator.SetTag(PlayerAnimator.activeAnim.ActiveTagName);
+            PlayerAnimator.SetCategory("normal",
+                PlayerAnimator.ActiveAnimation.FrameData.ActiveTagName,
+                PlayerAnimator.ActiveAnimation.FrameData.ActiveTag.StartFrame);
         }
     }
 }
