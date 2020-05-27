@@ -19,7 +19,7 @@ namespace Game1 {
             LatestHorizontalArrowKey = new BehaviorSubject<Keys>(Keys.Right);
             keyStateBuffer = distinctKeyboardStates.Buffer(2, 1);
         }
-        public void Update() {
+        public void Update() { }
 
         }
     }

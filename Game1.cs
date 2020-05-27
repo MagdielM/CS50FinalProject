@@ -37,7 +37,7 @@ namespace Game1 {
         Dictionary<string, SpriteReference> playerSpriteSet;
 
         #endregion
-
+        
 
         public Game1() {
             Graphics = new GraphicsDeviceManager(this);
