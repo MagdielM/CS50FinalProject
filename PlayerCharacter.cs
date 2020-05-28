@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 
 namespace Game1 {
@@ -17,17 +18,25 @@ namespace Game1 {
         public void LoadInit(Dictionary<string, FrameDataLibrary.SpriteReference> spriteSet, string defaultAnimation) {
             PlayerAnimator.LoadInit(spriteSet, defaultAnimation);
         }
+
         public void Update(GameTime gameTime) {
             PlayerAnimator.Update(gameTime);
         }
+
         public void Draw(SpriteBatch spriteBatch) {
             PlayerAnimator.Draw(spriteBatch, Position);
         }
+
+        public void ManageInput(Keys key) {
+
+        }
+
         public void Flip() {
             PlayerAnimator.SetCategory("flipped", 
                 PlayerAnimator.ActiveAnimation.FrameData.ActiveTagName, 
                 PlayerAnimator.ActiveAnimation.FrameData.ActiveTag.StartFrame);
         }
+
         public void Deflip() {
             PlayerAnimator.SetCategory("normal",
                 PlayerAnimator.ActiveAnimation.FrameData.ActiveTagName,
