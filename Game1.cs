@@ -10,7 +10,7 @@ namespace Game1 {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    class MainGame : Game {
+    class Game1 : Game {
 
         #region General References
 
@@ -39,7 +39,7 @@ namespace Game1 {
         #endregion
         
 
-        public MainGame() {
+        public Game1() {
             Graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
