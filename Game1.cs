@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Linq;
 using FrameDataLibrary;
+using System;
 
 namespace Game1 {
     /// <summary>
@@ -32,7 +33,6 @@ namespace Game1 {
         #region Content References
 
         Texture2D background1;
-        AnimationController playerAnimController;
         private SpriteFont font;
         Dictionary<string, SpriteReference> playerSpriteSet;
 
@@ -47,7 +47,7 @@ namespace Game1 {
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
+        /// related content. Calling base.Initialize will enumerate through any components
         /// and initialize them as well.
         /// </summary>
         protected override void Initialize() {
@@ -58,6 +58,9 @@ namespace Game1 {
             RenderTarget = new RenderTarget2D(GraphicsDevice, VirtualWidth, VirtualHeight);
             Screen = new Rectangle(new Point(0, 0), new Point(Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight));
             PlayerCharacter.Initialize();
+            InputHandler.LatestHorizontalArrowKey.Subscribe(PlayerCharacter.ManageInput);
+
+
             base.Initialize();
         }
 
