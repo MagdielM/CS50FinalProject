@@ -32,8 +32,8 @@ namespace Game1 {
         }
 
         public void Flip() {
-            PlayerAnimator.SetCategory("flipped",
-                PlayerAnimator.ActiveAnimation.FrameData.ActiveTagName,
+            PlayerAnimator.SetCategory("flipped", 
+                PlayerAnimator.ActiveAnimation.FrameData.ActiveTagName, 
                 PlayerAnimator.ActiveAnimation.FrameData.ActiveTag.StartFrame);
         }
 

@@ -60,6 +60,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AnimationController.cs" />
+    <Compile Include="General.cs" />
     <Compile Include="MainGame.cs" />
     <Compile Include="InputHandler.cs" />
     <Compile Include="PlayerCharacter.cs" />

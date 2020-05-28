@@ -11,7 +11,7 @@ namespace General {
         /// </summary>
         [STAThread]
         static void Main() {
-            using (var game = new Game1.MainGame())
+            using (var game = new Game1())
                 game.Run();
         }
     }
