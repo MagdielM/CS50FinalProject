@@ -1,10 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FrameDataLibrary;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Linq;
-using FrameDataLibrary;
-using System;
 
 namespace Game1 {
     /// <summary>
@@ -14,18 +13,18 @@ namespace Game1 {
 
         #region General References
 
-        int VirtualWidth = 256;
-        int VirtualHeight = 144;
-        Rectangle Screen;
-        RenderTarget2D RenderTarget;
-        GraphicsDeviceManager Graphics;
-        SpriteBatch SpriteBatch;
+        readonly int virtualWidth = 256;
+        readonly int virtualHeight = 144;
+        Rectangle screen;
+        RenderTarget2D renderTarget;
+        readonly GraphicsDeviceManager graphics;
+        SpriteBatch spriteBatch;
         #endregion
 
         #region Game References
 
-        private KeyboardState PreviousState;
-        PlayerCharacter PlayerCharacter;
+        private KeyboardState previousState;
+        public PlayerCharacter PlayerCharacter { get; private set; }
         private int Score = 0;
 
         #endregion
@@ -37,10 +36,10 @@ namespace Game1 {
         Dictionary<string, SpriteReference> playerSpriteSet;
 
         #endregion
-        
+
 
         public MainGame() {
-            Graphics = new GraphicsDeviceManager(this);
+            graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
@@ -52,13 +51,12 @@ namespace Game1 {
         /// </summary>
         protected override void Initialize() {
             PlayerCharacter = new PlayerCharacter(new Vector2(50, 50));
-            Graphics.PreferredBackBufferWidth = 1280;
-            Graphics.PreferredBackBufferHeight = 720;
-            Graphics.ApplyChanges();
-            RenderTarget = new RenderTarget2D(GraphicsDevice, VirtualWidth, VirtualHeight);
-            Screen = new Rectangle(new Point(0, 0), new Point(Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight));
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
+            graphics.ApplyChanges();
+            renderTarget = new RenderTarget2D(GraphicsDevice, virtualWidth, virtualHeight);
+            screen = new Rectangle(new Point(0, 0), new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
             PlayerCharacter.Initialize();
-            InputHandler.LatestHorizontalArrowKey.Subscribe(PlayerCharacter.ManageInput);
 
 
             base.Initialize();
@@ -71,7 +69,7 @@ namespace Game1 {
         protected override void LoadContent() {
 
             // Create a new SpriteBatch, which can be used to draw textures.
-            SpriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteBatch = new SpriteBatch(GraphicsDevice);
             background1 = Content.Load<Texture2D>("Sprites/Assets/Background_1");
             font = Content.Load<SpriteFont>("Sprites/PixelFont");
 
@@ -102,7 +100,7 @@ namespace Game1 {
 
             KeyboardState currentState = Keyboard.GetState();
 
-            PreviousState = currentState;
+            previousState = currentState;
 
             // Checks for held keys
             if (currentState.IsKeyDown(Keys.Left)) {
@@ -125,22 +123,22 @@ namespace Game1 {
         protected override void Draw(GameTime gameTime) {
 
             // Draw to internal resolution render target.
-            GraphicsDevice.SetRenderTarget(RenderTarget);
+            GraphicsDevice.SetRenderTarget(renderTarget);
             GraphicsDevice.Clear(Color.DeepSkyBlue);
             Vector2 size = font.MeasureString("Score: " + Score);
 
-            SpriteBatch.Begin
+            spriteBatch.Begin
                 (SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp,
                 null, null, null, null);
-            SpriteBatch.Draw(background1, new Rectangle(0, 0, VirtualWidth, VirtualHeight), Color.White);
-            SpriteBatch.DrawString(font, "Score: " + Score, new Vector2(Window.ClientBounds.Width / 2 - size.X / 2, 50), Color.Black);
-            PlayerCharacter.Draw(SpriteBatch);
-            SpriteBatch.End();
+            spriteBatch.Draw(background1, new Rectangle(0, 0, virtualWidth, virtualHeight), Color.White);
+            spriteBatch.DrawString(font, "Score: " + Score, new Vector2(Window.ClientBounds.Width / 2 - size.X / 2, 50), Color.Black);
+            PlayerCharacter.Draw(spriteBatch);
+            spriteBatch.End();
 
             GraphicsDevice.SetRenderTarget(null);
-            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp);
-            SpriteBatch.Draw(RenderTarget, Screen, Color.White);
-            SpriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp);
+            spriteBatch.Draw(renderTarget, screen, Color.White);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
