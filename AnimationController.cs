@@ -14,7 +14,7 @@ class AnimationController {
     /// <summary>
     /// Empty constructor. LoadInit() should be called before use.
     /// </summary>
-    public AnimationController() {}
+    public AnimationController() { }
 
     /// <summary>
     /// Convenience constructor. This is equivalent to creating the empty object and calling LoadInit(spriteSet, default).
@@ -70,8 +70,8 @@ class AnimationController {
             (int)ActiveAnimation.FrameData.SpriteDimensions.X,
             (int)ActiveAnimation.FrameData.SpriteDimensions.Y);
         Rectangle destRect = new Rectangle(
-            (int)location.X, (int)location.Y, 
-            (int)ActiveAnimation.FrameData.SpriteDimensions.X, 
+            (int)location.X, (int)location.Y,
+            (int)ActiveAnimation.FrameData.SpriteDimensions.X,
             (int)ActiveAnimation.FrameData.SpriteDimensions.Y);
         spriteBatch.Draw(ActiveAnimation.Sprite, destRect, sourceRect, Color.White);
     }
