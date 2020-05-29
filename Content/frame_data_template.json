@@ -1,5 +1,5 @@
 {
-    "imagePath": "Sprites/PlatformerPack/Player/player_sprite.xnb",
+    "imagePath": "Sprites/PlatformerPack/Player/player_sprite",
     "size": { "w": 880, "h": 32 },
     "sourceSize": { "w": 22, "h": 32 },
     "scale": "1",
