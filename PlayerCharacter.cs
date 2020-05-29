@@ -5,42 +5,50 @@ using System.Collections.Generic;
 
 namespace Game1 {
     class PlayerCharacter {
-        public Vector2 Position;
-        AnimationController PlayerAnimator;
+        public Vector2 position;
+        public Vector2 moveSpeed = new Vector2(1, 0);
+        private AnimationController playerAnimator;
 
         public PlayerCharacter(Vector2 spawnPoint) {
-            Position = spawnPoint;
+            position = spawnPoint;
         }
 
         public void Initialize() {
         }
 
         public void LoadInit(Dictionary<string, FrameDataLibrary.SpriteReference> spriteSet, string defaultAnimation) {
-            PlayerAnimator.LoadInit(spriteSet, defaultAnimation);
+            playerAnimator.LoadInit(spriteSet, defaultAnimation);
         }
 
         public void Update(GameTime gameTime) {
-            PlayerAnimator.Update(gameTime);
+            playerAnimator.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch) {
-            PlayerAnimator.Draw(spriteBatch, Position);
+            playerAnimator.Draw(spriteBatch, position);
         }
 
         public void ManageInput(Keys key) {
-
+            switch (key) {
+                case Keys.Left:
+                    position -= moveSpeed;
+                    break;
+                case Keys.Right:
+                    position += moveSpeed;
+                    break;
+            }
         }
 
         public void Flip() {
-            PlayerAnimator.SetCategory("flipped",
-                PlayerAnimator.ActiveAnimation.FrameData.ActiveTagName,
-                PlayerAnimator.ActiveAnimation.FrameData.ActiveTag.StartFrame);
+            playerAnimator.SetCategory("flipped",
+                playerAnimator.ActiveAnimation.FrameData.ActiveTagName,
+                playerAnimator.ActiveAnimation.FrameData.ActiveTag.StartFrame);
         }
 
         public void Deflip() {
-            PlayerAnimator.SetCategory("normal",
-                PlayerAnimator.ActiveAnimation.FrameData.ActiveTagName,
-                PlayerAnimator.ActiveAnimation.FrameData.ActiveTag.StartFrame);
+            playerAnimator.SetCategory("normal",
+                playerAnimator.ActiveAnimation.FrameData.ActiveTagName,
+                playerAnimator.ActiveAnimation.FrameData.ActiveTag.StartFrame);
         }
     }
 }

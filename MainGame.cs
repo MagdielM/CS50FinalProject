@@ -2,8 +2,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Input;
 
 namespace Game1 {
     /// <summary>
@@ -23,9 +25,8 @@ namespace Game1 {
 
         #region Game References
 
-        private KeyboardState previousState;
-        public PlayerCharacter PlayerCharacter { get; private set; }
-        private int Score = 0;
+        public PlayerCharacter Player;
+        private int score = 0;
 
         #endregion
 
@@ -50,15 +51,13 @@ namespace Game1 {
         /// and initialize them as well.
         /// </summary>
         protected override void Initialize() {
-            PlayerCharacter = new PlayerCharacter(new Vector2(50, 50));
+            Player = new PlayerCharacter(new Vector2(50, 50));
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();
             renderTarget = new RenderTarget2D(GraphicsDevice, virtualWidth, virtualHeight);
             screen = new Rectangle(new Point(0, 0), new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
-            PlayerCharacter.Initialize();
-
-
+            Player.Initialize();
             base.Initialize();
         }
 
@@ -74,13 +73,15 @@ namespace Game1 {
             font = Content.Load<SpriteFont>("Sprites/PixelFont");
 
             var playerData = Content.Load<FrameData>("Sprites/PlatformerPack/Player/player_frame_data");
-            playerSpriteSet = new Dictionary<string, SpriteReference>();
+            playerSpriteSet = new Dictionary<string, SpriteReference> {
+                {
+                    "Main",
+                    new SpriteReference(
+                Content.Load<Texture2D>(playerData.ImagePath), playerData)
+                }
+            };
 
-
-            playerSpriteSet.Add("Main", new SpriteReference(
-                Content.Load<Texture2D>(playerData.ImagePath), playerData));
-
-            PlayerCharacter.LoadInit(playerSpriteSet, playerSpriteSet.Keys.ElementAt(0));
+            Player.LoadInit(playerSpriteSet, playerSpriteSet.Keys.ElementAt(0));
         }
 
         /// <summary>
@@ -98,21 +99,15 @@ namespace Game1 {
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime) {
 
-            KeyboardState currentState = Keyboard.GetState();
-
-            previousState = currentState;
-
             // Checks for held keys
-            if (currentState.IsKeyDown(Keys.Left)) {
-                PlayerCharacter.Position.X -= 30 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-            if (currentState.IsKeyDown(Keys.Right)) {
-                PlayerCharacter.Position.X += 30 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            Score++;
-            PlayerCharacter.Update(gameTime);
+            score++;
+            Player.Update(gameTime);
+            InputHandler.Update();
+            foreach (Keys key in InputHandler.InputOutKeys.Value) {
+                Player.ManageInput(key);
+            }
             base.Update(gameTime);
         }
 
@@ -125,16 +120,16 @@ namespace Game1 {
             // Draw to internal resolution render target.
             GraphicsDevice.SetRenderTarget(renderTarget);
             GraphicsDevice.Clear(Color.DeepSkyBlue);
-            Vector2 size = font.MeasureString("Score: " + Score);
-
+            Vector2 size = font.MeasureString("Score: " + score);
             spriteBatch.Begin
                 (SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp,
                 null, null, null, null);
             spriteBatch.Draw(background1, new Rectangle(0, 0, virtualWidth, virtualHeight), Color.White);
-            spriteBatch.DrawString(font, "Score: " + Score, new Vector2(Window.ClientBounds.Width / 2 - size.X / 2, 50), Color.Black);
-            PlayerCharacter.Draw(spriteBatch);
+            spriteBatch.DrawString(font, "Score: " + score, new Vector2(Window.ClientBounds.Width / 2 - size.X / 2, 50), Color.Black);
+            Player.Draw(spriteBatch);
             spriteBatch.End();
 
+            // Draw internal render target to back buffer.
             GraphicsDevice.SetRenderTarget(null);
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp);
             spriteBatch.Draw(renderTarget, screen, Color.White);
