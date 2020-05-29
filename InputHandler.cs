@@ -8,10 +8,11 @@ using System.Reactive.Subjects;
 namespace Game1 {
     public static class InputHandler {
         public static Subject<KeyboardState> KeyboardStatesStream { get; set; }
-        private static readonly IObservable<KeyboardState> distinctKeyboardStatesStream;
+        public static IObservable<KeyboardState> DistinctKeyboardStatesStream { get; private set; }
         private static readonly Subject<Keys[]> pressedKeys;
         private static IObservable<IList<Keys[]>> pressedKeyArrayBuffer;
 
+        public static BehaviorSubject<Keys[]> InputOutKeys { get; private set; }
         public static BehaviorSubject<Keys> LatestHorizontalArrowKey { get; private set; }
         public static BehaviorSubject<Keys> LatestVerticalArrowKey { get; private set; }
 
@@ -22,13 +23,19 @@ namespace Game1 {
 
         static InputHandler() {
             KeyboardStatesStream = new Subject<KeyboardState>();
-            distinctKeyboardStatesStream = KeyboardStatesStream.DistinctUntilChanged();
-            LatestHorizontalArrowKey = new BehaviorSubject<Keys>(Keys.Right);
-            distinctKeyboardStatesStream.Subscribe(onNext: CheckConflictingKeyPresses);
+            DistinctKeyboardStatesStream = KeyboardStatesStream.DistinctUntilChanged();
+            InputOutKeys = new BehaviorSubject<Keys[]>(new Keys[1]);
+            LatestHorizontalArrowKey = new BehaviorSubject<Keys>(Keys.None);
+            LatestVerticalArrowKey = new BehaviorSubject<Keys>(Keys.None);
+            KeyboardStatesStream.Subscribe(onNext: state => {
+                pressedKeys.OnNext(state.GetPressedKeys());
+            });
+            pressedKeys.Subscribe(onNext: keys => FilterKeys(keys));
+
+            DistinctKeyboardStatesStream.Subscribe(onNext: HandleConflictingInput);
         }
 
-        private static Action<KeyboardState> CheckConflictingKeyPresses => state => {
-            pressedKeys.OnNext(state.GetPressedKeys());
+        private static Action<KeyboardState> HandleConflictingInput => state => {
             pressedKeyArrayBuffer = pressedKeys.Buffer(2, 1);
             var horizontalKeyArrayBuffer = new List<Keys[]>();
             var verticalKeyArrayBuffer = new List<Keys[]>();
@@ -63,6 +70,17 @@ namespace Game1 {
         public static void Update() {
             KeyboardStatesStream.OnNext(Keyboard.GetState());
             LatestHorizontalArrowKey.OnNext(latestHorizontalArrowKey);
+            LatestVerticalArrowKey.OnNext(latestVerticalArrowKey);
+        }
+
+        private static void FilterKeys(Keys[] keys) {
+            var filteredKeys = (from key in keys
+                                where key != Keys.Up
+                                && key != Keys.Down
+                                && key != Keys.Left
+                                && key != Keys.Right
+                                select key).ToArray();
+            InputOutKeys.OnNext(filteredKeys);
         }
     }
 }
