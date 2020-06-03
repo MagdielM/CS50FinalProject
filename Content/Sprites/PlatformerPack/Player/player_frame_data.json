@@ -7,16 +7,16 @@
   "defaultCategory": { "normal": "Idle" },
   "frameTags": {
     "normal": [
-      { "name": "Idle", "from": 5, "to": 9, "framerate": 4, "continuous": true },
-      { "name": "Run", "from": 18, "to": 25, "framerate": 11, "continuous": true },
+      { "name": "Idle", "from": 5, "to": 9, "framerate": 9, "continuous": true },
+      { "name": "Run", "from": 18, "to": 25, "framerate": 17, "continuous": true },
       { "name": "Jump", "from": 33, "to": 39, "framerate": 3, "continuous": false },
       { "name": "Jump Ascending", "from": 35, "to": 35, "framerate": 1, "continuous": false },
       { "name": "Jump Apex", "from": 36, "to": 37, "framerate": 3, "continuous": false },
       { "name": "Jump Descending", "from": 38, "to": 38, "framerate": 1, "continuous": false }
     ],
     "flipped": [
-      { "name": "Idle", "from": 0, "to": 4, "framerate": 4, "continuous": true },
-      { "name": "Run", "from": 10, "to": 17, "framerate": 11, "continuous": true },
+      { "name": "Idle", "from": 0, "to": 4, "framerate": 9, "continuous": true },
+      { "name": "Run", "from": 10, "to": 17, "framerate": 17, "continuous": true },
       { "name": "Jump", "from": 26, "to": 32, "framerate": 3, "continuous": false },
       { "name": "Jump Ascending", "from": 28, "to": 28, "framerate": 1, "continuous": false },
       { "name": "Jump Apex", "from": 29, "to": 30, "framerate": 3, "continuous": false },
