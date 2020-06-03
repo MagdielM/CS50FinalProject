@@ -43,9 +43,9 @@ class AnimationController {
     /// Thrown when <paramref name="defaultAnimation"/> can't be found in <paramref name="spriteSet"/>.
     /// </exception>
     private void SetToDefault(string defaultAnimation) {
-        KeyValuePair<string, string> animation = SpriteSet[defaultAnimation].FrameData.DefaultAnimation;
+        FrameData animation = SpriteSet[defaultAnimation].FrameData;
         int frame = SpriteSet[defaultAnimation].FrameData.ActiveTag.StartFrame;
-        SetAnimation(defaultAnimation, animation.Key, animation.Value, frame);
+        SetAnimation(defaultAnimation, animation.DefaultAnimationCategory, animation.DefaultAnimationTag, frame);
     }
 
     public void Update(GameTime gameTime) {
@@ -84,20 +84,20 @@ class AnimationController {
     /// <param name="category"></param>
     /// <param name="animationTag"></param>
     /// <param name="frame"></param>
-    public void SetAnimation(string animationName, string category, string animationTag, int frame) {
+    public void SetAnimation(string animationName, string category, string animationTag, int frame = 0) {
         ActiveAnimation = SpriteSet[animationName];
         SetCategory(category, animationTag, frame);
     }
-    public void SetCategory(string category, string animationTag, int frame) {
+    public void SetCategory(string category, string animationTag, int frame = 0) {
         ActiveCategory = category;
         SetTag(animationTag, frame);
     }
-    public void SetTag(string animTag, int frame) {
+    public void SetTag(string animTag, int frame = 0) {
         ActiveAnimation.FrameData.ActiveTag = ActiveAnimation.FrameData.CategorizedTags[ActiveCategory][animTag];
         SetFrame(frame);
     }
-    private void SetFrame(int frame) {
-        frameToDraw = frame;
+    private void SetFrame(int frame = 0) {
+        frameToDraw = ActiveAnimation.FrameData.ActiveTag.GetFrameFromRelative(frame);
     }
     #endregion
 
@@ -106,7 +106,7 @@ class AnimationController {
     /// </summary>
     /// <param name="frame">The zero-indexed relative frame to convert.</param>
     /// <returns>The absolute frame in the <see cref="FrameData.TagData"/> based on the relative frame entered.</returns>
-    public int GetFrameFromActive(int frame) {
+    public int GetFrameFromActiveDefault(int frame) {
         return ActiveAnimation.FrameData.GetFrameFromDefault(frame);
     }
 }
