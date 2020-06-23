@@ -113,7 +113,7 @@ namespace Game1 {
         public static void Update() {
             KeyboardStatesStream.OnNext(Keyboard.GetState());
             LatestHorizontalArrowKey.OnNext(latestHorizontalArrowKey);
-            //LatestVerticalArrowKey.OnNext(latestVerticalArrowKey);
+            LatestVerticalArrowKey.OnNext(latestVerticalArrowKey);
         }
 
         private static void FilterKeys(Keys[] keys) {
