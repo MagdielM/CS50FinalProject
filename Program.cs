@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace General {
+namespace Game1 {
 #if WINDOWS || LINUX
     /// <summary>
     /// The main class.
@@ -11,7 +11,7 @@ namespace General {
         /// </summary>
         [STAThread]
         static void Main() {
-            using (var game = new Game1.MainGame())
+            using (var game = new MainGame())
                 game.Run();
         }
     }
