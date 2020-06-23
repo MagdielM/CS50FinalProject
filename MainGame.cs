@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FrameDataLibrary;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Linq;
-using FrameDataLibrary;
-using System;
+using static Game1.Level;
 
 namespace Game1 {
     /// <summary>
@@ -14,19 +14,55 @@ namespace Game1 {
 
         #region General References
 
-        int VirtualWidth = 256;
-        int VirtualHeight = 144;
-        Rectangle Screen;
-        RenderTarget2D RenderTarget;
-        GraphicsDeviceManager Graphics;
-        SpriteBatch SpriteBatch;
+        public const int virtualWidth = 320;
+        public const int virtualHeight = 180;
+        Rectangle screen;
+        RenderTarget2D renderTarget;
+        readonly GraphicsDeviceManager graphics;
+        SpriteBatch spriteBatch;
+        public float fontHeight;
+        public Vector2[] debugLinePositions;
         #endregion
 
         #region Game References
 
-        private KeyboardState PreviousState;
-        PlayerCharacter PlayerCharacter;
-        private int Score = 0;
+        public PlayerCharacter Player { get; private set; }
+        private Camera camera;
+        public static Vector2 risingGravity = new Vector2(0, 16f);
+        public static Vector2 fallingGravity = new Vector2(0, 26f);
+        public static Level currentLevel;
+        private TileCodes[,] level1 = {
+            // Row 1
+            {TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, 
+                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, 
+                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, 
+                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty },
+            // Row 2
+            {TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, 
+                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty,
+                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty,
+                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty },
+            // Row 3
+            {TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty,
+                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty,
+                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty,
+                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty },
+            // Row 4
+            {TileCodes.GroundLeftCorner, TileCodes.Ground, TileCodes.Ground, TileCodes.Ground, 
+                TileCodes.Ground, TileCodes.Ground, TileCodes.Empty, TileCodes.Ground,
+                TileCodes.Ground, TileCodes.Ground, TileCodes.Ground, TileCodes.Ground,
+                TileCodes.Ground, TileCodes.Ground, TileCodes.Ground, TileCodes.GroundRightCorner },
+            // Row 5
+            {TileCodes.DeepGroundLeftCorner, TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround,
+                TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.Ground, TileCodes.DeepGround,
+                TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround,
+                TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGroundRightCorner },
+            // Row 6
+            {TileCodes.DeepGroundLeftCorner, TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround,
+                TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround,
+                TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround,
+                TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGroundRightCorner },
+        };
 
         #endregion
 
@@ -35,12 +71,13 @@ namespace Game1 {
         Texture2D background1;
         private SpriteFont font;
         Dictionary<string, SpriteReference> playerSpriteSet;
+        private string level1TilemapPath = "Sprites/PlatformerPack/raw files/tilemap";
 
         #endregion
-        
+
 
         public MainGame() {
-            Graphics = new GraphicsDeviceManager(this);
+            graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
@@ -51,16 +88,13 @@ namespace Game1 {
         /// and initialize them as well.
         /// </summary>
         protected override void Initialize() {
-            PlayerCharacter = new PlayerCharacter(new Vector2(50, 50));
-            Graphics.PreferredBackBufferWidth = 1280;
-            Graphics.PreferredBackBufferHeight = 720;
-            Graphics.ApplyChanges();
-            RenderTarget = new RenderTarget2D(GraphicsDevice, VirtualWidth, VirtualHeight);
-            Screen = new Rectangle(new Point(0, 0), new Point(Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight));
-            PlayerCharacter.Initialize();
-            InputHandler.LatestHorizontalArrowKey.Subscribe(PlayerCharacter.ManageInput);
-
-
+            Player = new PlayerCharacter(new Point(50, 50));
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
+            graphics.ApplyChanges();
+            renderTarget = new RenderTarget2D(GraphicsDevice, virtualWidth, virtualHeight);
+            screen = new Rectangle(new Point(0, 0), new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
+            camera = new Camera();
             base.Initialize();
         }
 
@@ -71,18 +105,29 @@ namespace Game1 {
         protected override void LoadContent() {
 
             // Create a new SpriteBatch, which can be used to draw textures.
-            SpriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteBatch = new SpriteBatch(GraphicsDevice);
             background1 = Content.Load<Texture2D>("Sprites/Assets/Background_1");
             font = Content.Load<SpriteFont>("Sprites/PixelFont");
+            fontHeight = font.MeasureString("Height test").Y;
+            debugLinePositions = new Vector2[] {
+                Vector2.Zero,
+                new Vector2(0, fontHeight),
+                new Vector2(0, fontHeight * 2),
+                new Vector2(0, fontHeight * 3)
+            };
+
+            currentLevel = new Level(Content.Load<Texture2D>(level1TilemapPath), level1);
 
             var playerData = Content.Load<FrameData>("Sprites/PlatformerPack/Player/player_frame_data");
-            playerSpriteSet = new Dictionary<string, SpriteReference>();
+            playerSpriteSet = new Dictionary<string, SpriteReference> {
+                {
+                    "Main",
+                    new SpriteReference(
+                Content.Load<Texture2D>(playerData.ImagePath), playerData)
+                }
+            };
 
-
-            playerSpriteSet.Add("Main", new SpriteReference(
-                Content.Load<Texture2D>(playerData.ImagePath), playerData));
-
-            PlayerCharacter.LoadInit(playerSpriteSet, playerSpriteSet.Keys.ElementAt(0));
+            Player.LoadInit(playerSpriteSet, playerSpriteSet.Keys.ElementAt(0));
         }
 
         /// <summary>
@@ -100,21 +145,15 @@ namespace Game1 {
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime) {
 
-            KeyboardState currentState = Keyboard.GetState();
-
-            PreviousState = currentState;
-
             // Checks for held keys
-            if (currentState.IsKeyDown(Keys.Left)) {
-                PlayerCharacter.Position.X -= 30 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-            if (currentState.IsKeyDown(Keys.Right)) {
-                PlayerCharacter.Position.X += 30 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            Score++;
-            PlayerCharacter.Update(gameTime);
+            foreach (Keys key in InputHandler.InputOutKeys.Value) {
+                Player.ManageGeneralInput(key);
+            }
+            Player.Update(gameTime);
+            camera.Follow(Player);
+            InputHandler.Update();
             base.Update(gameTime);
         }
 
@@ -125,22 +164,32 @@ namespace Game1 {
         protected override void Draw(GameTime gameTime) {
 
             // Draw to internal resolution render target.
-            GraphicsDevice.SetRenderTarget(RenderTarget);
+            GraphicsDevice.SetRenderTarget(renderTarget);
             GraphicsDevice.Clear(Color.DeepSkyBlue);
-            Vector2 size = font.MeasureString("Score: " + Score);
-
-            SpriteBatch.Begin
+            spriteBatch.Begin
                 (SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp,
                 null, null, null, null);
-            SpriteBatch.Draw(background1, new Rectangle(0, 0, VirtualWidth, VirtualHeight), Color.White);
-            SpriteBatch.DrawString(font, "Score: " + Score, new Vector2(Window.ClientBounds.Width / 2 - size.X / 2, 50), Color.Black);
-            PlayerCharacter.Draw(SpriteBatch);
-            SpriteBatch.End();
+            spriteBatch.Draw(background1, new Rectangle(0, 0, virtualWidth, virtualHeight), Color.White);
+            spriteBatch.End();
 
+            spriteBatch.Begin
+                (SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp,
+                null, null, null, camera.Transform);
+            currentLevel.Draw(spriteBatch);
+            Player.Draw(spriteBatch);
+            spriteBatch.End();
+
+            // Draw internal render target to back buffer.
             GraphicsDevice.SetRenderTarget(null);
-            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque, SamplerState.PointClamp);
-            SpriteBatch.Draw(RenderTarget, Screen, Color.White);
-            SpriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
+            spriteBatch.Draw(renderTarget, screen, Color.White);
+            spriteBatch.DrawString(font, $"movementVector: {Player.movementVector}", debugLinePositions[0], Color.Black);
+            spriteBatch.DrawString(font, $"PlayerStateStream.Value: {Player.PlayerStateStream.Value}",
+                debugLinePositions[1], Color.Black);
+            spriteBatch.DrawString(font, $"playerBounds: {Player.playerBounds.Location}, " +
+                $"X2: {Player.playerBounds.X}, Y2: {Player.playerBounds.Y}", debugLinePositions[2], Color.Black);
+            spriteBatch.DrawString(font, $"isCollidingHorizontally: {Player.isCollidingHorizontally}", debugLinePositions[3] , Color.Black);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
