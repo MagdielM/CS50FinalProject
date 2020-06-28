@@ -14,14 +14,14 @@ namespace Game1 {
         public Vector2 adjustedMovementVector = new Vector2(0f, 0f);
         private Vector2 moveSpeed = new Vector2(200f, 0f);
         private Vector2 jumpStrength = new Vector2(0f, 330f);
-        public Tile landingTile;
         public int remainingJumps = 1;
+        public List<Tile> surroundingTiles;
         public RectangleF playerBounds;
         private Keys lastHorizontalArrowKey;
         private Keys lastVerticalArrowKey;
         public bool isCollidingHorizontally;
         public bool isCollidingVertically;
-        private CharacterAnimationController playerAnimator;
+        public PlayerAnimator playerAnimator;
         private Subject<PlayerEvent> playerEventStream;
         public BehaviorSubject<PlayerState> PlayerStateStream { get; set; }
 
@@ -29,7 +29,8 @@ namespace Game1 {
             PlayerStateStream = new BehaviorSubject<PlayerState>(PlayerState.OnGround);
             playerEventStream = new Subject<PlayerEvent>();
             position = spawnPoint.ToVector2();
-            playerAnimator = new CharacterAnimationController();
+            surroundingTiles = new List<Tile>();
+            playerAnimator = new PlayerAnimator();
             playerEventStream.Subscribe(ReactToEvent);
         }
 
@@ -68,6 +69,7 @@ namespace Game1 {
         }
 
         public void Update(GameTime gameTime) {
+            DetectSurroundingTiles();
             adjustedMovementVector = new Vector2(
                 movementVector.X * (float)gameTime.ElapsedGameTime.TotalSeconds,
                 movementVector.Y * (float)gameTime.ElapsedGameTime.TotalSeconds);
@@ -82,6 +84,20 @@ namespace Game1 {
                 PlayerStateStream.OnNext(PlayerState.InAir);
             }
             playerAnimator.Update(gameTime, PlayerStateStream.Value, movementVector, isCollidingHorizontally);
+        }
+
+        private void DetectSurroundingTiles() {
+            foreach (Tile tile in MainGame.currentLevel.TileArray) {
+                if (tile.tileBounds.Left <= playerBounds.Right + 196 && tile.tileBounds.Right >= playerBounds.Left - 196 &&
+                    tile.tileBounds.Top <= playerBounds.Bottom + 96 && tile.tileBounds.Bottom >= playerBounds.Top - 96) {
+                    if (!surroundingTiles.Contains(tile)) {
+                        surroundingTiles.Add(tile);
+                    }
+                }
+                else {
+                    surroundingTiles.Remove(tile);
+                }
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch) {
@@ -117,6 +133,11 @@ namespace Game1 {
                         playerEventStream.OnNext(PlayerEvent.Jumped);
                     }
                     break;
+                case Keys.None:
+                    if (PlayerStateStream.Value == PlayerState.InAir && movementVector.Y < 0) {
+                        movementVector.Y = 0;
+                    }
+                    break;
             }
             lastVerticalArrowKey = key;
         }
@@ -134,21 +155,19 @@ namespace Game1 {
 
         private bool MoveVertically(Vector2 verticalVector) {
             playerBounds.Offset(verticalVector);
-            foreach (List<Tile> tileRow in MainGame.currentLevel.TileArray) {
-                foreach (Tile tile in tileRow) {
-                    if (playerBounds.Intersects(tile.tileBounds) && tile.TileCode != Level.TileCodes.Empty) {
-                        movementVector.Y = 0;
-                        playerBounds.Offset(-verticalVector);
-                        if (verticalVector.Y >= 0) {
-                            landingTile = tile;
-                            playerBounds.Offset(new Vector2(0, landingTile.tileBounds.Top - playerBounds.Bottom));
-                            playerEventStream.OnNext(PlayerEvent.CollidedWithGround);
-                            return true;
-                        }
-                        else if (verticalVector.Y < 0) {
-                            playerEventStream.OnNext(PlayerEvent.CollidedWithCeiling);
-                            return true;
-                        }
+            foreach (Tile tile in surroundingTiles) {
+                if (playerBounds.Intersects(tile.tileBounds) && tile.TileCode != Level.TileCodes.Empty) {
+                    movementVector.Y = 0;
+                    playerBounds.Offset(-verticalVector);
+                    if (verticalVector.Y >= 0) {
+                        Tile landingTile = tile;
+                        playerBounds.Offset(new Vector2(0, landingTile.tileBounds.Top - playerBounds.Bottom));
+                        playerEventStream.OnNext(PlayerEvent.CollidedWithGround);
+                        return true;
+                    }
+                    else if (verticalVector.Y < 0) {
+                        playerEventStream.OnNext(PlayerEvent.CollidedWithCeiling);
+                        return true;
                     }
                 }
             }
@@ -157,14 +176,12 @@ namespace Game1 {
 
         private bool MoveHorizontally(Vector2 horizontalVector) {
             playerBounds.Offset(horizontalVector);
-            foreach (List<Tile> tileRow in MainGame.currentLevel.TileArray) {
-                foreach (Tile tile in tileRow) {
-                    if (playerBounds.Intersects(tile.tileBounds) && tile.TileCode != Level.TileCodes.Empty
-                        && (playerBounds.Bottom > tile.tileBounds.Top)) {
-                        playerBounds.Offset(-horizontalVector);
-                        playerEventStream.OnNext(PlayerEvent.CollidedWithWall);
-                        return true;
-                    }
+            foreach (Tile tile in MainGame.currentLevel.TileArray) {
+                if (playerBounds.Intersects(tile.tileBounds) && tile.TileCode != Level.TileCodes.Empty
+                    && (playerBounds.Bottom > tile.tileBounds.Top)) {
+                    playerBounds.Offset(-horizontalVector);
+                    playerEventStream.OnNext(PlayerEvent.CollidedWithWall);
+                    return true;
                 }
             }
             return false;
