@@ -14,8 +14,8 @@ namespace Game1 {
 
         #region General References
 
-        public const int virtualWidth = 320;
-        public const int virtualHeight = 180;
+        public const int virtualWidth = 384;
+        public const int virtualHeight = 216;
         Rectangle screen;
         RenderTarget2D renderTarget;
         readonly GraphicsDeviceManager graphics;
@@ -31,38 +31,6 @@ namespace Game1 {
         public static Vector2 risingGravity = new Vector2(0, 16f);
         public static Vector2 fallingGravity = new Vector2(0, 26f);
         public static Level currentLevel;
-        private TileCodes[,] level1 = {
-            // Row 1
-            {TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, 
-                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, 
-                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, 
-                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty },
-            // Row 2
-            {TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, 
-                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty,
-                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty,
-                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty },
-            // Row 3
-            {TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty,
-                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty,
-                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty,
-                TileCodes.Empty, TileCodes.Empty, TileCodes.Empty, TileCodes.Empty },
-            // Row 4
-            {TileCodes.GroundLeftCorner, TileCodes.Ground, TileCodes.Ground, TileCodes.Ground, 
-                TileCodes.Ground, TileCodes.Ground, TileCodes.Empty, TileCodes.Ground,
-                TileCodes.Ground, TileCodes.Ground, TileCodes.Ground, TileCodes.Ground,
-                TileCodes.Ground, TileCodes.Ground, TileCodes.Ground, TileCodes.GroundRightCorner },
-            // Row 5
-            {TileCodes.DeepGroundLeftCorner, TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround,
-                TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.Ground, TileCodes.DeepGround,
-                TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround,
-                TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGroundRightCorner },
-            // Row 6
-            {TileCodes.DeepGroundLeftCorner, TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround,
-                TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround,
-                TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround,
-                TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGround, TileCodes.DeepGroundRightCorner },
-        };
 
         #endregion
 
@@ -88,7 +56,7 @@ namespace Game1 {
         /// and initialize them as well.
         /// </summary>
         protected override void Initialize() {
-            Player = new PlayerCharacter(new Point(50, 50));
+            Player = new PlayerCharacter(new Point(56, 256));
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();
@@ -113,10 +81,13 @@ namespace Game1 {
                 Vector2.Zero,
                 new Vector2(0, fontHeight),
                 new Vector2(0, fontHeight * 2),
-                new Vector2(0, fontHeight * 3)
+                new Vector2(0, fontHeight * 3),
+                new Vector2(0, fontHeight * 4),
+                new Vector2(0, fontHeight * 5),
+                new Vector2(0, fontHeight * 6)
             };
 
-            currentLevel = new Level(Content.Load<Texture2D>(level1TilemapPath), level1);
+            currentLevel = new Level(Content.Load<Texture2D>(level1TilemapPath), LevelDefinitions.level1);
 
             var playerData = Content.Load<FrameData>("Sprites/PlatformerPack/Player/player_frame_data");
             playerSpriteSet = new Dictionary<string, SpriteReference> {
@@ -148,9 +119,9 @@ namespace Game1 {
             // Checks for held keys
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            foreach (Keys key in InputHandler.InputOutKeys.Value) {
+/*            foreach (Keys key in InputHandler.InputOutKeys.Value) {
                 Player.ManageGeneralInput(key);
-            }
+            }*/
             Player.Update(gameTime);
             camera.Follow(Player);
             InputHandler.Update();
@@ -175,7 +146,7 @@ namespace Game1 {
             spriteBatch.Begin
                 (SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp,
                 null, null, null, camera.Transform);
-            currentLevel.Draw(spriteBatch);
+            currentLevel.Draw(spriteBatch, Player.surroundingTiles);
             Player.Draw(spriteBatch);
             spriteBatch.End();
 
@@ -184,11 +155,8 @@ namespace Game1 {
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
             spriteBatch.Draw(renderTarget, screen, Color.White);
             spriteBatch.DrawString(font, $"movementVector: {Player.movementVector}", debugLinePositions[0], Color.Black);
-            spriteBatch.DrawString(font, $"PlayerStateStream.Value: {Player.PlayerStateStream.Value}",
-                debugLinePositions[1], Color.Black);
-            spriteBatch.DrawString(font, $"playerBounds: {Player.playerBounds.Location}, " +
-                $"X2: {Player.playerBounds.X}, Y2: {Player.playerBounds.Y}", debugLinePositions[2], Color.Black);
-            spriteBatch.DrawString(font, $"isCollidingHorizontally: {Player.isCollidingHorizontally}", debugLinePositions[3] , Color.Black);
+            spriteBatch.DrawString(font, $"surroundingTiles: {Player.surroundingTiles.Count}", debugLinePositions[1], Color.Black);
+            spriteBatch.DrawString(font, $"levelTiles: {currentLevel.TileArray.Count}", debugLinePositions[2], Color.Black);
             spriteBatch.End();
 
             base.Draw(gameTime);
