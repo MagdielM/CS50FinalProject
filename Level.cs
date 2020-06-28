@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Game1 {
     class Level {
-        #region Tile Codes and Definitions
+        #region Entity Codes and Definitions
         public enum TileCodes {
             Empty,
             Platform,
@@ -39,14 +39,13 @@ namespace Game1 {
 
         public Texture2D levelAtlas;
 
-        public List<List<Tile>> TileArray { get; private set; } = new List<List<Tile>>();
+        public List<Tile> TileArray { get; private set; } = new List<Tile>();
         public Level(Texture2D atlas, TileCodes[,] tileArray) {
             levelAtlas = atlas;
             for (int i = 0; i < tileArray.GetLength(0); i++) {
-                TileArray.Insert(i, new List<Tile>());
                 for (int j = 0; j < tileArray.GetLength(1); j++) {
-                    Point position = new Point(32 * j, 32 * i);
-                    TileArray[i].Insert(j, GenerateTile(tileArray[i, j], position));
+                    Point position = new Point(32 * i, 32 * j);
+                    TileArray.Add(GenerateTile(tileArray[i, j], position));
                 }
             }
         }
@@ -56,10 +55,14 @@ namespace Game1 {
         }
 
         public void Draw(SpriteBatch spriteBatch) {
-            foreach (List<Tile> tileRow in TileArray) {
-                foreach(Tile tile in tileRow) {
-                    tile.Draw(spriteBatch);
-                }
+            foreach (Tile tile in TileArray) {
+                tile.Draw(spriteBatch);
+            }
+        }
+
+        public void Draw(SpriteBatch spriteBatch, List<Tile> tiles) {
+            foreach (Tile tile in tiles) {
+                tile.Draw(spriteBatch);
             }
         }
     }
