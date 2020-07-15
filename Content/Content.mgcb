@@ -11,6 +11,7 @@
 #-------------------------------- References --------------------------------#
 
 /reference:..\..\FrameDataPipelineExtension\bin\Debug\FrameDataPipelineExtension.dll
+/reference:..\..\SliceDataPipelineExtension\bin\Debug\SliceDataPipelineExtension.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -81,10 +82,10 @@
 /processorParam:TextureFormat=Color
 /build:Sprites/PlatformerPack/Player/Jump/jump.png
 
-#begin Sprites/PlatformerPack/Player/player_frame_data.json
+#begin Sprites/PlatformerPack/Player/player_frame_data.fdt
 /importer:FrameDataImporter
 /processor:FrameDataProcessor
-/build:Sprites/PlatformerPack/Player/player_frame_data.json
+/build:Sprites/PlatformerPack/Player/player_frame_data.fdt
 
 #begin Sprites/PlatformerPack/Player/player_sprite.png
 /importer:TextureImporter
@@ -110,6 +111,18 @@
 /processorParam:TextureFormat=Color
 /build:Sprites/PlatformerPack/Player/Run/run.png
 
+#begin Sprites/PlatformerPack/raw files/cursor.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/PlatformerPack/raw files/cursor.png
+
 #begin Sprites/PlatformerPack/raw files/tilemap.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -121,4 +134,21 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Sprites/PlatformerPack/raw files/tilemap.png
+
+#begin Sprites/PlatformerPack/raw files/ui_3x3.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/PlatformerPack/raw files/ui_3x3.png
+
+#begin Sprites/PlatformerPack/raw files/ui_3x3_data.sdt
+/importer:SliceDataImporter
+/processor:SliceDataProcessor
+/build:Sprites/PlatformerPack/raw files/ui_3x3_data.sdt
 

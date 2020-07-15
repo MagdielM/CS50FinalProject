@@ -1,0 +1,16 @@
+{
+  "imagePath": "Sprites/PlatformerPack/raw files/ui_3x3.png",
+  "slices": [
+    { "name": "corner", "bounds": {"x": 0, "y": 0, "w": 9, "h": 9 } },
+    { "name": "line_horizontal_start", "bounds": {"x": 9, "y": 0, "w": 3, "h": 9 } },
+    { "name": "line_horizontal", "bounds": {"x": 12, "y": 0, "w": 1, "h": 9 } },
+    { "name": "line_horizontal_end", "bounds": {"x": 13, "y": 0, "w": 3, "h": 9 } },
+    { "name": "line_vertical_start", "bounds": {"x": 16, "y": 0, "w": 9, "h": 3 } },
+    { "name": "line_vertical", "bounds": {"x": 16, "y": 3, "w": 9, "h": 1 } },
+    { "name": "line_vertical_end", "bounds": {"x": 16, "y": 4, "w": 9, "h": 3 } },
+    { "name": "decorator", "bounds": {"x": 25, "y": 0, "w": 7, "h": 7 } },
+    { "name": "color1", "bounds": {"x": 16, "y": 7, "w": 1, "h": 1 } },
+    { "name": "color2", "bounds": {"x": 17, "y": 7, "w": 1, "h": 1 } },
+    { "name": "color3", "bounds": {"x": 18, "y": 7, "w": 1, "h": 1 } }
+  ]
+}
