@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Game1 {
-    class Level {
+    public class Level {
         #region Entity Codes and Definitions
         public enum TileCodes {
             Empty,

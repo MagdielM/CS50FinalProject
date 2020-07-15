@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Game1 {
-    class Tile {
+    public class Tile {
         public Level.TileCodes TileCode { get; }
         public Point Position { get; }
         public RectangleF tileBounds;
