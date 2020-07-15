@@ -12,8 +12,8 @@ namespace Game1 {
         public Level.TileCodes TileCode { get; }
         public Point Position { get; }
         public RectangleF tileBounds;
-        Rectangle tileAtlasCoordinates;
-        Texture2D tileSprite;
+        private Rectangle tileAtlasCoordinates;
+        private Texture2D tileSprite;
 
         public Tile(Level.TileCodes tileCode, Point position, ref Texture2D sprite, Rectangle coordinates) {
             TileCode = tileCode;
