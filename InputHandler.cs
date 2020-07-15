@@ -26,8 +26,6 @@ namespace Game1 {
             .Create(SetHorizontalKeyArrayBuffer(horizontalCounterKeys));
         private static readonly IObserver<IList<Keys[]>> verticalInputFilterObserver = Observer
             .Create(SetVerticalKeyArrayBuffer(verticalCounterKeys));
-        private static readonly IObserver<IList<Keys[]>> conflictingInputHandlerObserver = Observer
-            .Create(HandleConflictingInput);
 
         public static BehaviorSubject<Keys[]> InputOutKeys { get; }
         public static BehaviorSubject<Keys> LatestHorizontalArrowKey { get; }
