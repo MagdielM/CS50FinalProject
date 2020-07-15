@@ -1,0 +1,20 @@
+{
+  "filename": "[filename]",
+  "slices": [
+    { "name": "corner", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } },
+    { "name": "corner_top_left", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } },
+    { "name": "corner_top_right", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } },
+    { "name": "corner_bottom_left", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } },
+    { "name": "corner_bottom_right", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } },
+    { "name": "line_horizontal_start", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } },
+    { "name": "line_horizontal", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } },
+    { "name": "line_horizontal_end", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } },
+    { "name": "line_vertical_start", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } },
+    { "name": "line_vertical", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } },
+    { "name": "line_vertical_end", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } },
+    { "name": "decorator", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } },
+    { "name": "color1", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } },
+    { "name": "color2", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } },
+    { "name": "color3", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } },
+  ]
+}
