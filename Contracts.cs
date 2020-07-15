@@ -13,8 +13,6 @@ namespace Game1 {
     public class NonEmptyAttribute : LocationContractAttribute,
         ILocationValidationAspect<Point>,
         ILocationValidationAspect<Rectangle> {
-        public NonEmptyAttribute() : base() {}
-
         public Exception ValidateValue(Point value, string locationName, LocationKind locationKind, LocationValidationContext context) {
             if (value == Point.Zero)
                 return new ArgumentOutOfRangeException($"The coordinates for {locationName} must not be (0, 0).");
