@@ -6,7 +6,6 @@ using PostSharp.Patterns.Contracts;
 using SliceDataLibrary;
 
 namespace Game1 {
-
     public class Canvas {
         public Rectangle RootBounds { get => Root.ElementBounds; }
         public List<CanvasElement> Children { get => Root.Children; }
@@ -33,8 +32,6 @@ namespace Game1 {
             return Root.PerformClick(hit);
         }
 
-
-
         public class CanvasElement {
             public SliceReference CanvasTexture { get; protected set; }
             public Rectangle ElementBounds { get => elementBounds; set => elementBounds = value; }
@@ -51,7 +48,7 @@ namespace Game1 {
             public int Right { get => elementBounds.Right; }
             public List<CanvasElement> Children { get; }
             public CanvasElement ParentElement { get; protected set; }
-            protected Rectangle elementBounds;
+            internal Rectangle elementBounds;
 
             #region Constructors
             public CanvasElement([Required] ref SliceReference canvasTexture,
@@ -94,7 +91,7 @@ namespace Game1 {
                                  [Required] ref SliceReference canvasTexture,
                                  [NonEmpty] Rectangle elementBounds,
                                  List<CanvasElement> nestedElements = null) {
-                this.CanvasTexture = canvasTexture;
+                CanvasTexture = canvasTexture;
                 this.elementBounds = elementBounds;
                 ParentElement = parentElement;
                 Children = nestedElements ?? new List<CanvasElement>();
@@ -105,7 +102,7 @@ namespace Game1 {
                                  Point origin,
                                  [NonEmpty] Point size,
                                  List<CanvasElement> nestedElements = null) {
-                this.CanvasTexture = canvasTexture;
+                CanvasTexture = canvasTexture;
                 elementBounds = new Rectangle(origin, size);
                 ParentElement = parentElement;
                 Children = nestedElements ?? new List<CanvasElement>();
@@ -115,7 +112,7 @@ namespace Game1 {
                                  [Required] ref SliceReference canvasTexture,
                                  [NonEmpty] Point origin,
                                  List<CanvasElement> nestedElements = null) {
-                this.CanvasTexture = canvasTexture;
+                CanvasTexture = canvasTexture;
                 elementBounds = new Rectangle(origin, Point.Zero);
                 ParentElement = parentElement;
                 Children = nestedElements ?? new List<CanvasElement>();
@@ -124,7 +121,7 @@ namespace Game1 {
             public CanvasElement(CanvasElement parentElement,
                                  [Required] ref SliceReference canvasTexture,
                                  List<CanvasElement> nestedElements = null) {
-                this.CanvasTexture = canvasTexture;
+                CanvasTexture = canvasTexture;
                 elementBounds = new Rectangle(Point.Zero, Point.Zero);
                 ParentElement = parentElement;
                 Children = nestedElements ?? new List<CanvasElement>();
@@ -242,7 +239,6 @@ namespace Game1 {
         }
 
         public class RootElement : CanvasElement {
-
             #region Constructors
 
             public RootElement([Required] ref SliceReference canvasTexture, List<CanvasElement> hierarchy = null)
@@ -255,7 +251,6 @@ namespace Game1 {
         }
 
         public class EmptyElement : CanvasElement {
-
             #region Constructors
 
             public EmptyElement(ref SliceReference canvasTexture,
@@ -631,7 +626,6 @@ namespace Game1 {
 
             public override void Centralize() {
                 base.Centralize();
-                Point offset = new Point(X, Y);
                 SetDrawBounds();
             }
 
