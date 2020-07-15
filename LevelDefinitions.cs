@@ -1,8 +1,8 @@
 ﻿using static Game1.Level;
 
 namespace Game1 {
-    static class LevelDefinitions {
-        public static TileCodes[,] level1 = {
+    public static class LevelDefinitions {
+        public static TileCodes[,] level1Tiles = {
             // Column 1
             {
                 TileCodes.Empty,
@@ -783,7 +783,7 @@ namespace Game1 {
                 TileCodes.DeepGround
             },
 
-            // Column 40
+            // Column 41
             {
                 TileCodes.Empty,
                 TileCodes.Empty,
@@ -803,7 +803,148 @@ namespace Game1 {
                 TileCodes.DeepGroundRightCorner
             },
 
+            // Column 42
+            {
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+            },
+
+            // Column 43
+            {
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+            },
+
+            // Column 44
+            {
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+            },
+
+            // Column 45
+            {
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.PlatformLeftCorner,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+            },
+
+            // Column 46
+            {
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Platform,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+            },
+
+            // Column 47
+            {
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.PlatformRightCorner,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+            },
+
+            // Column 48
+            {
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+                TileCodes.Empty,
+            },
+
 
         };
+
     }
 }
