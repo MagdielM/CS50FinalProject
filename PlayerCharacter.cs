@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using RectangleFLib;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
@@ -14,7 +15,7 @@ namespace Game1 {
         public Vector2 adjustedMovementVector = new Vector2(0f, 0f);
         private Vector2 moveSpeed = new Vector2(200f, 0f);
         private Vector2 jumpStrength = new Vector2(0f, 330f);
-        public int remainingJumps = 1;
+        private int remainingJumps = 1;
         public List<Tile> surroundingTiles;
         public RectangleF playerBounds;
         private Keys lastHorizontalArrowKey;
@@ -23,45 +24,46 @@ namespace Game1 {
         public bool isCollidingVertically;
         public PlayerAnimator playerAnimator;
         private Subject<PlayerEvent> playerEventStream;
-        public BehaviorSubject<PlayerState> PlayerStateStream { get; set; }
+        public PlayerState playerState { get; set; }
+        private Keys[] lastGeneralKeyArray;
 
         public PlayerCharacter(Point spawnPoint) {
-            PlayerStateStream = new BehaviorSubject<PlayerState>(PlayerState.OnGround);
             playerEventStream = new Subject<PlayerEvent>();
             position = spawnPoint.ToVector2();
             surroundingTiles = new List<Tile>();
             playerAnimator = new PlayerAnimator();
             playerEventStream.Subscribe(ReactToEvent);
+            lastGeneralKeyArray = Array.Empty<Keys>();
         }
 
         private void ReactToEvent(PlayerEvent playerEvent) {
-            switch (PlayerStateStream.Value) {
+            switch (playerState) {
                 case PlayerState.OnGround:
                     switch (playerEvent) {
                         case PlayerEvent.Jumped:
                             movementVector.Y = 0;
                             movementVector -= jumpStrength;
-                            PlayerStateStream.OnNext(PlayerState.InAir);
+                            playerState = PlayerState.InAir;
                             break;
                     }
                     break;
                 case PlayerState.InAir:
                     switch (playerEvent) {
                         case PlayerEvent.Jumped:
-                            remainingJumps -= 1;
+                            remainingJumps--;
                             movementVector.Y = 0;
                             movementVector -= jumpStrength;
                             break;
                         case PlayerEvent.CollidedWithGround:
                             remainingJumps = 1;
-                            PlayerStateStream.OnNext(PlayerState.OnGround);
+                            playerState = PlayerState.OnGround;
                             break;
                     }
                     break;
             }
         }
 
-        public void LoadInit(Dictionary<string, FrameDataLibrary.SpriteReference> spriteSet, string defaultAnimation) {
+        public void LoadInit(Dictionary<string, FrameDataLibrary.FrameReference> spriteSet, string defaultAnimation) {
             playerAnimator.LoadInit(spriteSet, defaultAnimation);
             playerBounds = new RectangleF(new Rectangle(position.ToPoint(), spriteSet["Main"].FrameData.SpriteDimensions.ToPoint()));
             InputHandler.LatestHorizontalArrowKey.Subscribe(ManageHorizontalInput);
@@ -81,15 +83,15 @@ namespace Game1 {
             }
             Move();
             if (!isCollidingVertically) {
-                PlayerStateStream.OnNext(PlayerState.InAir);
+                playerState = PlayerState.InAir;
             }
-            playerAnimator.Update(gameTime, PlayerStateStream.Value, movementVector, isCollidingHorizontally);
+            playerAnimator.Update(gameTime, playerState, movementVector, isCollidingHorizontally);
         }
 
         private void DetectSurroundingTiles() {
             foreach (Tile tile in MainGame.currentLevel.TileArray) {
                 if (tile.tileBounds.Left <= playerBounds.Right + 196 && tile.tileBounds.Right >= playerBounds.Left - 196 &&
-                    tile.tileBounds.Top <= playerBounds.Bottom + 96 && tile.tileBounds.Bottom >= playerBounds.Top - 96) {
+                    tile.tileBounds.Top <= playerBounds.Bottom + 128 && tile.tileBounds.Bottom >= playerBounds.Top - 128) {
                     if (!surroundingTiles.Contains(tile)) {
                         surroundingTiles.Add(tile);
                     }
@@ -134,7 +136,7 @@ namespace Game1 {
                     }
                     break;
                 case Keys.None:
-                    if (PlayerStateStream.Value == PlayerState.InAir && movementVector.Y < 0) {
+                    if (playerState == PlayerState.InAir && movementVector.Y < 0) {
                         movementVector.Y = 0;
                     }
                     break;
@@ -143,7 +145,6 @@ namespace Game1 {
         }
 
         public void ManageGeneralInput(Keys key) {
-            
         }
 
         private void Move() {
@@ -192,12 +193,14 @@ namespace Game1 {
         public enum PlayerState {
             OnGround,
             InAir,
+            Dead
         }
         public enum PlayerEvent {
             Jumped,
             CollidedWithWall,
             CollidedWithGround,
-            CollidedWithCeiling
+            CollidedWithCeiling,
+            Died
         }
 
         #endregion
