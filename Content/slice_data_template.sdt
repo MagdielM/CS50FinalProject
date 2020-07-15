@@ -1,0 +1,6 @@
+{
+  "filename": "[filename]",
+  "slices": [
+    { "name": "[slice_name]", "bounds": {"x": 0, "y": 0, "w": 0, "h": 0 } }
+  ]
+}
