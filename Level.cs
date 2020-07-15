@@ -39,13 +39,15 @@ namespace Game1 {
 
         public Texture2D levelAtlas;
 
-        public List<Tile> TileArray { get; private set; } = new List<Tile>();
+        public List<Tile> TileArray { get; } = new List<Tile>();
         public Level(Texture2D atlas, TileCodes[,] tileArray) {
             levelAtlas = atlas;
             for (int i = 0; i < tileArray.GetLength(0); i++) {
                 for (int j = 0; j < tileArray.GetLength(1); j++) {
-                    Point position = new Point(32 * i, 32 * j);
-                    TileArray.Add(GenerateTile(tileArray[i, j], position));
+                    if (tileArray[i, j] != TileCodes.Empty) {
+                        Point position = new Point(32 * i, 32 * j);
+                        TileArray.Add(GenerateTile(tileArray[i, j], position));
+                    }
                 }
             }
         }
