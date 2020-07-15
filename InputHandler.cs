@@ -9,11 +9,11 @@ using System.Reactive.Subjects;
 namespace Game1 {
     public static class InputHandler {
         public static Subject<KeyboardState> KeyboardStatesStream { get; set; }
-        public static IObservable<KeyboardState> DistinctKeyboardStatesStream { get; private set; }
+        public static IObservable<KeyboardState> DistinctKeyboardStatesStream { get; }
         private static readonly Subject<Keys[]> pressedKeys;
         private static readonly IObservable<Keys[]> distinctPressedKeys;
         private static readonly IObservable<IList<Keys[]>> distinctPressedKeyArrayBuffer;
-        private static Random randomKeySelector;
+        private static readonly Random randomKeySelector;
 
         private static Keys latestHorizontalArrowKey;
         private static Keys latestVerticalArrowKey;
@@ -22,16 +22,16 @@ namespace Game1 {
         private static (Keys key1, Keys key2) horizontalCounterKeys = (key1: Keys.Left, key2: Keys.Right);
         private static (Keys key1, Keys key2) verticalCounterKeys = (key1: Keys.Up, key2: Keys.Down);
 
-        private static IObserver<IList<Keys[]>> horizontalInputFilterObserver = Observer
+        private static readonly IObserver<IList<Keys[]>> horizontalInputFilterObserver = Observer
             .Create(SetHorizontalKeyArrayBuffer(horizontalCounterKeys));
-        private static IObserver<IList<Keys[]>> verticalInputFilterObserver = Observer
+        private static readonly IObserver<IList<Keys[]>> verticalInputFilterObserver = Observer
             .Create(SetVerticalKeyArrayBuffer(verticalCounterKeys));
-        private static IObserver<IList<Keys[]>> conflictingInputHandlerObserver = Observer
+        private static readonly IObserver<IList<Keys[]>> conflictingInputHandlerObserver = Observer
             .Create(HandleConflictingInput);
 
-        public static BehaviorSubject<Keys[]> InputOutKeys { get; private set; }
-        public static BehaviorSubject<Keys> LatestHorizontalArrowKey { get; private set; }
-        public static BehaviorSubject<Keys> LatestVerticalArrowKey { get; private set; }
+        public static BehaviorSubject<Keys[]> InputOutKeys { get; }
+        public static BehaviorSubject<Keys> LatestHorizontalArrowKey { get; }
+        public static BehaviorSubject<Keys> LatestVerticalArrowKey { get; }
 
         static InputHandler() {
             randomKeySelector = new Random();
@@ -44,20 +44,17 @@ namespace Game1 {
             verticalKeyArrayBuffer = new List<Keys[]>();
             LatestHorizontalArrowKey = new BehaviorSubject<Keys>(Keys.None);
             LatestVerticalArrowKey = new BehaviorSubject<Keys>(Keys.None);
-            KeyboardStatesStream.Subscribe(onNext: state => {
-                pressedKeys.OnNext(state.GetPressedKeys());
-            });
-            pressedKeys.Subscribe(onNext: keys => FilterKeys(keys));
+            KeyboardStatesStream.Subscribe(onNext: state => pressedKeys.OnNext(state.GetPressedKeys()));
+            pressedKeys.Subscribe(onNext: FilterKeys);
             distinctPressedKeyArrayBuffer = distinctPressedKeys.Buffer(2, 1);
             distinctPressedKeyArrayBuffer.Subscribe(horizontalInputFilterObserver);
             distinctPressedKeyArrayBuffer.Subscribe(verticalInputFilterObserver);
             distinctPressedKeyArrayBuffer.Subscribe(HandleConflictingInput);
         }
 
-        private static Action<IList<Keys[]>> HandleConflictingInput => state => {
+        private static Action<IList<Keys[]>> HandleConflictingInput => _ => {
             SetLatestKey(horizontalKeyArrayBuffer, ref latestHorizontalArrowKey);
             SetLatestKey(verticalKeyArrayBuffer, ref latestVerticalArrowKey);
-
         };
         private static Action<IList<Keys[]>> SetHorizontalKeyArrayBuffer(
             (Keys key1, Keys key2) counterKeys) {
@@ -89,7 +86,7 @@ namespace Game1 {
         }
 
         private static void SetLatestKey(List<Keys[]> keyArrayBuffer, ref Keys key) {
-            if (keyArrayBuffer != null && keyArrayBuffer.Count() == 2) {
+            if (keyArrayBuffer?.Count == 2) {
                 if (keyArrayBuffer[1].Length == 0) {
                     key = Keys.None;
                 }
